@@ -160,23 +160,52 @@ button[data-baseweb="tab"][aria-selected="true"] { background: var(--surface); b
 
 /* ----- home page banner ----- */
 .st-key-hero {
-  background: linear-gradient(145deg, var(--btn-a), var(--btn-b)); border-radius: 26px;
-  padding: 38px 40px 30px; margin-bottom: 26px; box-shadow: var(--raised);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(255, 255, 255, 0.24), transparent 36%),
+    radial-gradient(circle at 72% 118%, rgba(249, 115, 22, 0.26), transparent 46%),
+    linear-gradient(135deg, var(--hero-a), var(--hero-b));
+  border-radius: 26px; padding: 38px 40px 30px; margin-bottom: 26px; box-shadow: var(--raised);
 }
 .st-key-hero h1, .st-key-hero p, .st-key-hero .eyebrow { color: var(--btn-text); }
 .st-key-hero h1 { max-width: 22ch; line-height: 1.15; }
-.st-key-hero p { max-width: 62ch; opacity: 0.92; }
-.eyebrow { font-size: var(--size-small); letter-spacing: 0.14em; font-weight: 700; opacity: 0.85; margin-bottom: 6px; }
-/* buttons on the banner are light, so they stand out from the dark gradient */
-.st-key-hero .stButton button { background: var(--surface) !important; color: var(--text) !important; }
-.st-key-hero .stButton button p { color: var(--text) !important; }
+.st-key-hero p { max-width: 62ch; opacity: 0.95; }
+.eyebrow { font-size: var(--size-small); letter-spacing: 0.14em; font-weight: 700; opacity: 0.9; margin-bottom: 6px; }
+/* orange call-to-action and a light second button, so both stand out from the banner */
+.st-key-hero [data-testid="stBaseButton-primary"] { background: var(--cta) !important; color: #ffffff !important; }
+.st-key-hero .stButton button:not([kind="primary"]) { background: var(--surface) !important; color: var(--text) !important; }
+.st-key-hero .stButton button:not([kind="primary"]) p { color: var(--text) !important; }
 
-/* ----- category icons at the top of item cards ----- */
+/* ----- category icons: a round raised badge in the category's own colour ----- */
+[class*="_cat_smartphone"] { --cat: var(--c-smartphone); }
+[class*="_cat_laptop_mac"] { --cat: var(--c-laptop_mac); }
+[class*="_cat_tablet_mac"] { --cat: var(--c-tablet_mac); }
+[class*="_cat_tv"] { --cat: var(--c-tv); }
+[class*="_cat_headphones"] { --cat: var(--c-headphones); }
+[class*="_cat_cable"] { --cat: var(--c-cable); }
+[class*="_cat_kitchen"] { --cat: var(--c-kitchen); }
+[class*="_cat_devices_other"] { --cat: var(--c-devices_other); }
 [class*="_card_"] h4 [data-testid="stIconMaterial"], [class*="_card_"] h2 [data-testid="stIconMaterial"] {
-  font-size: 2.2rem; color: var(--accent);
+  display: inline-flex; align-items: center; justify-content: center; width: 3.4rem; height: 3.4rem;
+  border-radius: 50%; font-size: 1.9rem; color: var(--cat, var(--accent)); background: var(--surface);
+  box-shadow: var(--raised-small);
 }
 [class*="_card_"] h4, [class*="_card_"] h2 { padding-bottom: 0; }
+/* category shortcut buttons on the home page */
+.st-key-cat_smartphone [data-testid="stIconMaterial"] { color: var(--c-smartphone); }
+.st-key-cat_laptop_mac [data-testid="stIconMaterial"] { color: var(--c-laptop_mac); }
+.st-key-cat_tablet_mac [data-testid="stIconMaterial"] { color: var(--c-tablet_mac); }
+.st-key-cat_tv [data-testid="stIconMaterial"] { color: var(--c-tv); }
+.st-key-cat_headphones [data-testid="stIconMaterial"] { color: var(--c-headphones); }
+.st-key-cat_cable [data-testid="stIconMaterial"] { color: var(--c-cable); }
+.st-key-cat_kitchen [data-testid="stIconMaterial"] { color: var(--c-kitchen); }
+.st-key-cat_devices_other [data-testid="stIconMaterial"] { color: var(--c-devices_other); }
 
+/* ----- colour touches ----- */
+[class*="st-key-"][class*="_card_"] h3 { color: var(--price); }
+[class*="st-key-step_card_"] h4 { color: var(--accent); }
+[data-testid="stMetricValue"], [data-testid="stMetricValue"] * { color: var(--accent); }
+[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) { color: var(--accent); }
+.badge { padding: 2px 10px; border-radius: 999px; box-shadow: var(--pressed); font-size: 0.85rem; }
 '''
 
 # ======================================================================
@@ -186,42 +215,67 @@ button[data-baseweb="tab"][aria-selected="true"] { background: var(--surface); b
 # Both dictionaries must have exactly the same keys. Each key becomes a CSS variable
 # (for example "surface" becomes --surface) that style.css uses everywhere.
 # 
-# Palette: Smoky Black #11120D, Olive Drab #565448, Bone #D8CFBD, Floral White #FFFAF4.
+# Palette: soft blue-grey surface, electric blue and violet buttons, teal banner, orange prices,
+# and one colour per product category (the keys that start with c-).
 # ======================================================================
 LIGHT = {
     "scheme": "light",           # tells the browser to draw its own controls in light colours
-    "surface": "#d8cfbd",        # page, cards, buttons, inputs: all the same colour
-    "surface-alt": "#cbc1ad",    # hover rows in dropdowns
-    "shadow-dark": "#b3aa97",    # shadow on the bottom-right of raised shapes
-    "shadow-light": "#fffaf4",   # highlight on the top-left of raised shapes
-    "text": "#11120d",
-    "muted": "#565448",          # captions and small labels
-    "accent": "#3d3c33",         # hover and selected text
-    "btn-a": "#565448",          # primary button gradient, start
-    "btn-b": "#11120d",          # primary button gradient, end
-    "btn-text": "#fffaf4",
-    "line": "rgba(17, 18, 13, 0.18)",   # thin lines in tables
-    "ok": "#24602f",             # "Working" label
-    "warn": "#7d4a0c",           # "Minor fault" and "Major fault" labels
-    "bad": "#8f2f2f",            # "Dead" label
+    "surface": "#e4e9f4",        # page, cards, buttons, inputs: all the same soft blue-grey
+    "surface-alt": "#d6ddec",    # hover rows in dropdowns
+    "shadow-dark": "#b5bfd6",    # shadow on the bottom-right of raised shapes
+    "shadow-light": "#ffffff",   # highlight on the top-left of raised shapes
+    "text": "#141b33",
+    "muted": "#46537a",          # captions and small labels
+    "accent": "#1d4ed8",         # links, selected menu item, numbers (electric blue)
+    "btn-a": "#2563eb",          # primary button gradient, start (blue)
+    "btn-b": "#6d28d9",          # primary button gradient, end (violet)
+    "btn-text": "#ffffff",
+    "hero-a": "#1d4ed8",         # home banner gradient, start
+    "hero-b": "#0e7490",         # home banner gradient, end (teal)
+    "cta": "#c2410c",            # orange call-to-action button on the banner
+    "price": "#b23a08",          # prices (orange)
+    "line": "rgba(20, 27, 51, 0.16)",   # thin lines in tables
+    "ok": "#166534",             # "Working" label
+    "warn": "#92400e",           # "Minor fault" and "Major fault" labels
+    "bad": "#991b1b",            # "Dead" label
+    "c-smartphone": "#1d4ed8",
+    "c-laptop_mac": "#6d28d9",
+    "c-tablet_mac": "#0f766e",
+    "c-tv": "#c2410c",
+    "c-headphones": "#be185d",
+    "c-cable": "#15803d",
+    "c-kitchen": "#a16207",
+    "c-devices_other": "#475569",
 }
 
 DARK = {
     "scheme": "dark",
-    "surface": "#565448",
-    "surface-alt": "#4b4a3f",
-    "shadow-dark": "#38372e",
-    "shadow-light": "#757261",
-    "text": "#fffaf4",
-    "muted": "#d8cfbd",
-    "accent": "#fffaf4",
-    "btn-a": "#2b2a23",
-    "btn-b": "#11120d",
-    "btn-text": "#fffaf4",
-    "line": "rgba(255, 250, 244, 0.22)",
-    "ok": "#b9e0a0",
-    "warn": "#f0cf8a",
-    "bad": "#fbc0c0",
+    "surface": "#222a40",
+    "surface-alt": "#2c3652",
+    "shadow-dark": "#151b2c",
+    "shadow-light": "#2f3a58",
+    "text": "#eef2ff",
+    "muted": "#b9c4e4",
+    "accent": "#8db4ff",
+    "btn-a": "#2563eb",
+    "btn-b": "#6d28d9",
+    "btn-text": "#ffffff",
+    "hero-a": "#1e3a8a",
+    "hero-b": "#115e59",
+    "cta": "#c2410c",
+    "price": "#fdba74",
+    "line": "rgba(238, 242, 255, 0.2)",
+    "ok": "#86efac",
+    "warn": "#fcd34d",
+    "bad": "#fca5a5",
+    "c-smartphone": "#7db1ff",
+    "c-laptop_mac": "#b69cff",
+    "c-tablet_mac": "#4fd8c4",
+    "c-tv": "#ffa564",
+    "c-headphones": "#ff8fc0",
+    "c-cable": "#6ee79a",
+    "c-kitchen": "#f5c451",
+    "c-devices_other": "#a9b6cc",
 }
 
 
@@ -525,15 +579,18 @@ def clean_phone(phone):
     return None
 
 
-def register_user(name, email, password, role, city, phone="", address="", area=""):
+ADMIN_CODE = os.environ.get("REBOOT_ADMIN_CODE", "reboot-admin")   # needed to sign up as an admin
+
+
+def register_user(name, email, password, role, city="", phone="", address="", area="", admin_code=""):
     """Create an account. Returns (user, error). Exactly one of them is None.
 
-    The phone number and address are only shown to the other person in a deal
-    AFTER a purchase, so they can arrange the pickup.
+    role is "buyer", "seller" or "admin". Admins must also give the secret admin access code.
+    The phone number and address of buyers and sellers are only shown to the other person
+    in a deal AFTER a purchase, so they can arrange the pickup.
     """
     name, email, city = name.strip(), email.strip().lower(), city.strip()
     area, address = area.strip(), address.strip()
-    tidy_phone = clean_phone(phone)
 
     if len(name) < 2:
         return None, "Enter your full name."
@@ -541,21 +598,28 @@ def register_user(name, email, password, role, city, phone="", address="", area=
         return None, "Enter a valid email address."
     if len(password) < 6:
         return None, "Password needs at least 6 characters."
-    if role not in ("buyer", "seller"):
-        return None, "Choose whether you want to buy or sell."
-    if not city:
-        return None, "Enter your city."
-    if tidy_phone is None:
-        return None, "Enter a valid phone number (10 digits). It is shared only after a purchase."
-    if role == "seller" and len(address) < 8:
-        return None, "Sellers must enter a pickup address (it is shared with the buyer after a purchase)."
+    if role not in ("buyer", "seller", "admin"):
+        return None, "Choose a valid account type."
+
+    tidy_phone = ""
+    if role == "admin":
+        if not hmac.compare_digest(admin_code.encode("utf-8"), ADMIN_CODE.encode("utf-8")):
+            return None, "Wrong admin access code."
+    else:
+        tidy_phone = clean_phone(phone)
+        if not city:
+            return None, "Enter your city."
+        if tidy_phone is None:
+            return None, "Enter a valid phone number (10 digits). It is shared only after a purchase."
+        if role == "seller" and len(address) < 8:
+            return None, "Sellers must enter a pickup address (it is shared with the buyer after a purchase)."
 
     users = load("users")
     if any(u["email"] == email for u in users):
         return None, "An account with this email already exists."
     user = {"id": next_id(users), "name": name, "email": email, "role": role,
             "city": city, "area": area, "phone": tidy_phone, "address": address,
-            "password": hash_password(password)}
+            "blocked": False, "password": hash_password(password)}
     users.append(user)
     save("users", users)
     return user, None
@@ -568,6 +632,18 @@ def authenticate(email, password):
         if user["email"] == email and check_password(password, user["password"]):
             return user
     return None
+
+
+def ensure_admin():
+    """Make sure at least one admin account exists (older data folders have none)."""
+    users = load("users")
+    if not users or any(u.get("role") == "admin" for u in users):
+        return
+    users.append({"id": next_id(users), "name": "Site Admin", "email": "admin@demo.com", "role": "admin",
+                  "city": "Pune", "area": "Camp", "phone": "+91 90000 00007",
+                  "address": "ReBoot Map Office, Camp, Pune 411001", "blocked": False,
+                  "password": hash_password("demo123")})
+    save("users", users)
 
 
 # ======================================================================
@@ -700,6 +776,28 @@ def contact_details(user):
     }
 
 
+def admin_remove_item(item_id):
+    """Admin: remove a listing that has not been sold yet. Returns True if it was removed."""
+    items = load("items")
+    item = find(items, item_id)
+    if item and item["status"] == "available":
+        items.remove(item)
+        save("items", items)
+        return True
+    return False
+
+
+def set_blocked(user_id, blocked):
+    """Admin: block or unblock a buyer or seller. Admin accounts cannot be blocked. Returns True if changed."""
+    users = load("users")
+    user = find(users, user_id)
+    if user is None or user["role"] == "admin":
+        return False
+    user["blocked"] = bool(blocked)
+    save("users", users)
+    return True
+
+
 # ======================================================================
 # PART: SEED
 # Creates demo data the first time the app runs, so the site is never empty.
@@ -805,7 +903,7 @@ def seed_if_empty():
 # PART: APP
 # ReBoot Map - Streamlit app: a pre-owned electronics marketplace for Pune.
 # 
-# Run it with:   py -m streamlit run app.py
+# Run it with:   py -m streamlit run reboot_map.py
 # 
 # This file is only the screen. The real rules live in modules that know nothing
 # about Streamlit, so they could be reused by any other front end:
@@ -817,6 +915,7 @@ def seed_if_empty():
 st.set_page_config(page_title="ReBoot Map", page_icon="♻️", layout="wide")
 
 seed_if_empty()
+ensure_admin()
 
 SORTS = {"Newest": "new", "Price: low to high": "low", "Price: high to low": "high"}
 BADGE_CLASSES = {"Working": "ok", "Minor fault": "warn", "Major fault": "warn", "Dead": "bad"}
@@ -883,7 +982,8 @@ def save_theme():
 def current_user():
     """Return the logged-in user dictionary, or None."""
     user_id = st.session_state.get("user_id")
-    return find(load("users"), user_id) if user_id else None
+    user = find(load("users"), user_id) if user_id else None
+    return None if user and user.get("blocked") else user
 
 
 def flash(message, kind="success"):
@@ -938,22 +1038,29 @@ def do_search():
     go_to("Browse")
 
 
-def do_login():
+def do_login(role):
+    """Log in from the Buyer, Seller or Admin tab. The account type must match the tab."""
     s = st.session_state
-    user = authenticate(s.get("login_email", ""), s.get("login_password", ""))
+    user = authenticate(s.get(f"{role}_login_email", ""), s.get(f"{role}_login_password", ""))
     if user is None:
         flash("Wrong email or password.", "error")
-        return
-    s["user_id"] = user["id"]
-    flash(f"Welcome back, {user['name']}!")
-    go_to("My Dashboard")
+    elif user.get("blocked"):
+        flash("This account has been blocked by the admin.", "error")
+    elif user["role"] != role:
+        flash(f"This is a {user['role']} account. Please use the {user['role'].title()} tab.", "error")
+    else:
+        s["user_id"] = user["id"]
+        flash(f"Welcome back, {user['name']}!")
+        go_to("My Dashboard")
 
 
-def do_register():
+def do_register(role):
     s = st.session_state
+    p = f"{role}_reg_"
     user, error = register_user(
-        s.get("reg_name", ""), s.get("reg_email", ""), s.get("reg_password", ""), s.get("reg_role", "buyer"),
-        s.get("reg_city", ""), s.get("reg_phone", ""), s.get("reg_address", ""), s.get("reg_area", ""))
+        s.get(p + "name", ""), s.get(p + "email", ""), s.get(p + "password", ""), role,
+        s.get(p + "city", ""), s.get(p + "phone", ""), s.get(p + "address", ""), s.get(p + "area", ""),
+        s.get(p + "code", ""))
     if error:
         flash(error, "error")
         return
@@ -1003,6 +1110,31 @@ def do_delete(item_id, seller_id):
         flash("You can only remove your own unsold listings.", "error")
 
 
+def _admin_only():
+    user = current_user()
+    return user if user and user["role"] == "admin" else None
+
+
+def do_admin_remove():
+    if _admin_only() is None:
+        flash("Admins only.", "error")
+        return
+    item_id = st.session_state.get("admin_remove_pick")
+    flash("Listing removed." if admin_remove_item(item_id) else "That listing could not be removed.",
+          "success" if item_id else "error")
+
+
+def do_admin_block(blocked):
+    if _admin_only() is None:
+        flash("Admins only.", "error")
+        return
+    user_id = st.session_state.get("admin_user_pick")
+    if set_blocked(user_id, blocked):
+        flash("Account blocked." if blocked else "Account unblocked.")
+    else:
+        flash("That account cannot be changed.", "error")
+
+
 # ---------- reusable piece: a grid of item cards ----------
 def show_items(items, prefix):
     if not items:
@@ -1011,7 +1143,7 @@ def show_items(items, prefix):
     for start in range(0, len(items), 3):
         columns = st.columns(3)
         for column, item in zip(columns, items[start:start + 3]):
-            with column.container(key=f"{prefix}_card_{item['id']}"):
+            with column.container(key=f"{prefix}_card_{item['id']}_cat_{CATEGORY_ICONS.get(item['category'], 'devices_other')}"):
                 st.markdown(f"#### {icon(item['category'])}")
                 st.caption(item["category"])
                 st.markdown(f"**{md(item['name'])}**")
@@ -1041,7 +1173,7 @@ def page_home():
     names = list(CATEGORIES)
     for start in range(0, len(names), 4):
         for column, name in zip(st.columns(4), names[start:start + 4]):
-            column.button(f"{name} ({counts[name]})", key=f"cat_{name}", icon=icon(name),
+            column.button(f"{name} ({counts[name]})", key=f"cat_{CATEGORY_ICONS[name]}", icon=icon(name),
                           on_click=show_category, args=(name,))
 
     st.markdown("### Latest listings")
@@ -1074,7 +1206,7 @@ def page_item(item_id):
     seller = find(load("users"), item["seller_id"])
 
     left, right = st.columns([3, 2])
-    with left.container(key="item_card_main"):
+    with left.container(key=f"item_card_main_cat_{CATEGORY_ICONS.get(item['category'], 'devices_other')}"):
         st.markdown(f"## {icon(item['category'])}")
         st.title(md(item["name"]))
         st.markdown(f"{badge(item['condition'])} · {esc(item['category'])}", unsafe_allow_html=True)
@@ -1198,31 +1330,58 @@ def page_centers():
     st.caption("Collection points are sample data. Replace them with verified locations.")
 
 
-def page_account():
-    st.title("Log in or sign up")
-    login_tab, signup_tab = st.tabs(["Log in", "Sign up"])
-    with login_tab:
-        with st.form("login_form"):
-            st.text_input("Email", key="login_email")
-            st.text_input("Password", type="password", key="login_password")
-            st.form_submit_button("Log in", type="primary", on_click=do_login)
-        st.caption("Demo accounts, password demo123 for all: sellers seller@demo.com, seller2@demo.com, "
-                   "seller3@demo.com. Buyers buyer@demo.com, buyer2@demo.com, buyer3@demo.com.")
-    with signup_tab:
-        with st.form("signup_form"):
-            st.text_input("Full name", key="reg_name")
-            st.text_input("Email", key="reg_email")
-            st.text_input("Password (at least 6 characters)", type="password", key="reg_password")
-            st.selectbox("I want to", ["buyer", "seller"], key="reg_role",
-                         format_func=lambda r: "Buy electronics" if r == "buyer" else "Sell electronics")
+ROLE_INFO = {
+    "buyer": ("Buyer", "Find pre-owned electronics near you.",
+              "Demo buyers (password demo123): buyer@demo.com, buyer2@demo.com, buyer3@demo.com."),
+    "seller": ("Seller", "List your old electronics and reach buyers in Pune.",
+               "Demo sellers (password demo123): seller@demo.com, seller2@demo.com, seller3@demo.com."),
+    "admin": ("Admin", "Manage listings, accounts and orders.",
+              "Demo admin (password demo123): admin@demo.com. Creating a new admin needs the secret access code."),
+}
+
+
+def login_form(role):
+    with st.form(f"{role}_login_form"):
+        st.text_input("Email", key=f"{role}_login_email")
+        st.text_input("Password", type="password", key=f"{role}_login_password")
+        st.form_submit_button(f"Log in as {ROLE_INFO[role][0].lower()}", type="primary",
+                              on_click=do_login, args=(role,))
+    st.caption(ROLE_INFO[role][2])
+
+
+def signup_form(role):
+    p = f"{role}_reg_"
+    with st.form(f"{role}_signup_form"):
+        st.text_input("Full name", key=p + "name")
+        st.text_input("Email", key=p + "email")
+        st.text_input("Password (at least 6 characters)", type="password", key=p + "password")
+        if role == "admin":
+            st.text_input("Admin access code", type="password", key=p + "code")
+            st.caption("Ask the project owner for the access code. Without it, an admin account cannot be created.")
+        else:
             c1, c2 = st.columns(2)
-            c1.text_input("City", value="Pune", key="reg_city")
-            c2.text_input("Area (for example Baner)", key="reg_area")
-            st.text_input("Phone number", key="reg_phone", placeholder="+91 98765 43210")
-            st.text_input("Address (required for sellers, used as the pickup address)", key="reg_address")
+            c1.text_input("City", value="Pune", key=p + "city")
+            c2.text_input("Area (for example Baner)", key=p + "area")
+            st.text_input("Phone number", key=p + "phone", placeholder="+91 98765 43210")
+            if role == "seller":
+                st.text_input("Pickup address (required)", key=p + "address")
             st.caption("Your phone number and address are shown only to the other person in a deal, "
                        "after a purchase. They are never shown on listings.")
-            st.form_submit_button("Create account", type="primary", on_click=do_register)
+        st.form_submit_button("Create account", type="primary", on_click=do_register, args=(role,))
+
+
+def page_account():
+    st.title("Log in or sign up")
+    tabs = st.tabs([ROLE_INFO[r][0] for r in ("buyer", "seller", "admin")])
+    for tab, role in zip(tabs, ("buyer", "seller", "admin")):
+        with tab:
+            st.markdown(f"### {ROLE_INFO[role][0]} area")
+            st.write(ROLE_INFO[role][1])
+            login_tab, signup_tab = st.tabs(["Log in", "Sign up"])
+            with login_tab:
+                login_form(role)
+            with signup_tab:
+                signup_form(role)
 
 
 def page_sell():
@@ -1252,6 +1411,9 @@ def page_dashboard():
         st.info("Please log in first.")
         return
     st.title(f"Hello, {user['name']}")
+    if user["role"] == "admin":
+        page_admin()
+        return
     items = load("items")
     users = load("users")
 
@@ -1301,6 +1463,57 @@ def page_dashboard():
                 contact_block("Seller", seller)
             if order["id"] == st.session_state.get("last_order"):
                 st.success("Next step: call or message the seller to agree a time to collect the item.")
+
+
+def page_admin():
+    users, items, orders = load("users"), load("items"), load("orders")
+    by_id = {u["id"]: u for u in users}
+    name_of = lambda uid: by_id[uid]["name"] if uid in by_id else "(removed)"
+    sold = [i for i in items if i["status"] == "sold"]
+
+    a, b, c, d = st.columns(4)
+    a.metric("Buyers and sellers", sum(1 for u in users if u["role"] != "admin"))
+    b.metric("Listings available", len(items) - len(sold))
+    c.metric("Items sold", len(sold))
+    d.metric("Sales value", money(sum(o["price"] for o in orders)))
+
+    listings_tab, users_tab, orders_tab = st.tabs(["Listings", "Users", "Orders"])
+
+    with listings_tab:
+        if items:
+            show_table(pd.DataFrame([
+                {"ID": i["id"], "Item": i["name"], "Seller": name_of(i["seller_id"]), "Price": money(i["price"]),
+                 "Status": i["status"].title(), "Area": place(i)} for i in sorted(items, key=lambda i: -i["id"])]))
+        available = [i["id"] for i in items if i["status"] == "available"]
+        if available:
+            st.selectbox("Remove a listing", available, key="admin_remove_pick",
+                         format_func=lambda i: f"#{i}  {find(items, i)['name']}")
+            st.button("Remove selected listing", on_click=do_admin_remove)
+        st.caption("Sold listings stay, because they belong to an order.")
+
+    with users_tab:
+        show_table(pd.DataFrame([
+            {"ID": u["id"], "Name": u["name"], "Type": u["role"].title(), "Email": u["email"],
+             "Phone": u.get("phone") or "-", "Area": place(u) or "-",
+             "Status": "Blocked" if u.get("blocked") else "Active"} for u in users]))
+        others = [u["id"] for u in users if u["role"] != "admin"]
+        if others:
+            st.selectbox("Account", others, key="admin_user_pick",
+                         format_func=lambda i: f"{by_id[i]['name']} ({by_id[i]['role']})")
+            x, y, _ = st.columns([1, 1, 3])
+            x.button("Block", on_click=do_admin_block, args=(True,))
+            y.button("Unblock", on_click=do_admin_block, args=(False,))
+        st.caption("A blocked person cannot log in. Admin accounts cannot be blocked.")
+
+    with orders_tab:
+        if orders:
+            show_table(pd.DataFrame([
+                {"Order": o["id"], "Item": (find(items, o["item_id"]) or {}).get("name", "(removed)"),
+                 "Buyer": name_of(o["buyer_id"]),
+                 "Seller": name_of((find(items, o["item_id"]) or {}).get("seller_id")),
+                 "Price": money(o["price"]), "Date": o["date"]} for o in sorted(orders, key=lambda o: -o["id"])]))
+        else:
+            st.info("No orders yet.")
 
 
 PAGES = {
