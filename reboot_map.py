@@ -113,20 +113,25 @@ button[kind="primary"], button[kind="primaryFormSubmit"] {
 [data-testid="stBaseButton-primary"]:hover, [data-testid="stBaseButton-primaryFormSubmit"]:hover,
 button[kind="primary"]:hover, button[kind="primaryFormSubmit"]:hover { color: var(--btn-text) !important; filter: brightness(1.15); }
 
-/* ----- inputs: pressed in, like a dent in the surface ----- */
-[data-baseweb="input"], [data-baseweb="textarea"], [data-baseweb="select"] > div {
-  background: var(--surface) !important; border: none !important; border-radius: 14px !important;
-  box-shadow: var(--pressed) !important;
+/* ----- inputs: plain boxes. Light theme: near-white. Dark theme: near-black. ----- */
+[data-baseweb="input"], [data-baseweb="base-input"], [data-baseweb="textarea"], [data-baseweb="select"] > div,
+[data-testid="stTextInputRootElement"], [data-testid="stNumberInputContainer"],
+[data-testid="stTextArea"] > div > div, [data-testid="stSelectbox"] [data-baseweb="select"] > div {
+  background: var(--field) !important; background-color: var(--field) !important;
+  border: 1px solid var(--field-line) !important; border-radius: 14px !important; box-shadow: none !important;
 }
-[data-baseweb="base-input"], [data-baseweb="input"] input, [data-baseweb="textarea"] textarea {
+[data-baseweb="input"] input, [data-baseweb="textarea"] textarea, [data-baseweb="base-input"] input,
+[data-testid="stTextInputRootElement"] input, [data-testid="stNumberInputContainer"] input {
   background: transparent !important; color: var(--text) !important; -webkit-text-fill-color: var(--text);
 }
-[data-baseweb="input"] input::placeholder, [data-baseweb="textarea"] textarea::placeholder { color: var(--muted); opacity: 1; }
-[data-baseweb="select"] div, [data-baseweb="select"] span, [data-baseweb="select"] input { color: var(--text) !important; }
+[data-baseweb="input"] input::placeholder, [data-baseweb="textarea"] textarea::placeholder,
+[data-testid="stTextInputRootElement"] input::placeholder { color: var(--muted); opacity: 1; -webkit-text-fill-color: var(--muted); }
+[data-baseweb="select"] div, [data-baseweb="select"] span, [data-baseweb="select"] input { color: var(--text) !important; background-color: transparent; }
+[data-baseweb="select"] > div { background-color: var(--field) !important; }
 [data-baseweb="select"] svg, [data-testid="stNumberInputContainer"] svg { fill: var(--text); color: var(--text); }
-[data-testid="stNumberInputContainer"] button { background: transparent; color: var(--text); }
+[data-testid="stNumberInputContainer"] button { background: transparent !important; color: var(--text) !important; }
 /* dropdown lists (the menu that opens under a select box) */
-[data-baseweb="popover"] > div, [data-baseweb="popover"] ul, [data-baseweb="menu"] { background: var(--surface) !important; }
+[data-baseweb="popover"] > div, [data-baseweb="popover"] ul, [data-baseweb="menu"] { background: var(--field) !important; }
 [data-baseweb="popover"] li, [data-baseweb="popover"] li * { background: transparent; color: var(--text) !important; }
 [data-baseweb="popover"] li:hover, [data-baseweb="popover"] li[aria-selected="true"] { background: var(--surface-alt) !important; }
 
@@ -222,6 +227,8 @@ LIGHT = {
     "scheme": "light",           # tells the browser to draw its own controls in light colours
     "surface": "#e4e9f4",        # page, cards, buttons, inputs: all the same soft blue-grey
     "surface-alt": "#d6ddec",    # hover rows in dropdowns
+    "field": "#f8f9fc",          # text boxes, drop-downs and the search bar (near-white)
+    "field-line": "rgba(20, 27, 51, 0.14)",   # thin outline of those boxes
     "shadow-dark": "#b5bfd6",    # shadow on the bottom-right of raised shapes
     "shadow-light": "#ffffff",   # highlight on the top-left of raised shapes
     "text": "#141b33",
@@ -252,6 +259,8 @@ DARK = {
     "scheme": "dark",
     "surface": "#222a40",
     "surface-alt": "#2c3652",
+    "field": "#0a0d16",          # text boxes, drop-downs and the search bar (near-black)
+    "field-line": "rgba(238, 242, 255, 0.16)",
     "shadow-dark": "#151b2c",
     "shadow-light": "#2f3a58",
     "text": "#eef2ff",
@@ -615,8 +624,8 @@ def register_user(name, email, password, role, city="", phone="", address="", ar
             return None, "Sellers must enter a pickup address (it is shared with the buyer after a purchase)."
 
     users = load("users")
-    if any(u["email"] == email for u in users):
-        return None, "An account with this email already exists."
+    if any(u["email"] == email and u["role"] == role for u in users):
+        return None, f"A {role} account with this email already exists. Log in instead."
     user = {"id": next_id(users), "name": name, "email": email, "role": role,
             "city": city, "area": area, "phone": tidy_phone, "address": address,
             "blocked": False, "password": hash_password(password)}
@@ -625,11 +634,15 @@ def register_user(name, email, password, role, city="", phone="", address="", ar
     return user, None
 
 
-def authenticate(email, password):
-    """Return the user dictionary if the email and password are right, else None."""
+def authenticate(email, password, role=None):
+    """Return the user dictionary if the email and password are right, else None.
+
+    The same email may own one buyer, one seller and one admin account, so the login tab
+    passes the role it is for. With role=None any account type matches."""
     email = email.strip().lower()
     for user in load("users"):
-        if user["email"] == email and check_password(password, user["password"]):
+        if user["email"] == email and (role is None or user["role"] == role) \
+                and check_password(password, user["password"]):
             return user
     return None
 
@@ -1041,9 +1054,15 @@ def do_search():
 def do_login(role):
     """Log in from the Buyer, Seller or Admin tab. The account type must match the tab."""
     s = st.session_state
-    user = authenticate(s.get(f"{role}_login_email", ""), s.get(f"{role}_login_password", ""))
+    email, password = s.get(f"{role}_login_email", ""), s.get(f"{role}_login_password", "")
+    user = authenticate(email, password, role)
     if user is None:
-        flash("Wrong email or password.", "error")
+        other = authenticate(email, password)
+        if other is not None:
+            flash(f"This email has a {other['role']} account, not a {role} account. "
+                  f"Use the {other['role'].title()} tab, or sign up here.", "error")
+        else:
+            flash("Wrong email or password.", "error")
     elif user.get("blocked"):
         flash("This account has been blocked by the admin.", "error")
     elif user["role"] != role:
